@@ -110,27 +110,6 @@ class MTrack:
         self.right_foot_collision_detect = 0
         self.right_foot_dilation = 1
         self.right_foot_minBoxSize = 1
-        
-        # added variables for back feet
-        self.left_back_foot_color_lower_hue = 0
-        self.left_back_foot_color_lower_sat = 0
-        self.left_back_foot_color_lower_val = 0
-        self.left_back_foot_color_upper_hue = 180
-        self.left_back_foot_color_upper_sat = 255
-        self.left_back_foot_color_upper_val = 255
-        self.left_back_foot_collision_detect = 0
-        self.left_back_foot_dilation = 1
-        self.left_back_foot_minBoxSize = 1
-        self.right_back_foot_color_lower_hue = 0
-        self.right_back_foot_color_lower_sat = 0
-        self.right_back_foot_color_lower_val = 0
-        self.right_back_foot_color_upper_hue = 180
-        self.right_back_foot_color_upper_sat = 255
-        self.right_back_foot_color_upper_val = 255
-        self.right_back_foot_collision_detect = 0
-        self.right_back_foot_dilation = 1
-        self.right_back_foot_minBoxSize = 1
-
         self.noiseReduction_on = False
         self.deNoise_val = 1
         self.mouse_count = 0
