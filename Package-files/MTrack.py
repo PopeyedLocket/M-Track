@@ -110,6 +110,27 @@ class MTrack:
         self.right_foot_collision_detect = 0
         self.right_foot_dilation = 1
         self.right_foot_minBoxSize = 1
+        
+        # added variables for back feet
+        self.left_back_foot_color_lower_hue = 0
+        self.left_back_foot_color_lower_sat = 0
+        self.left_back_foot_color_lower_val = 0
+        self.left_back_foot_color_upper_hue = 180
+        self.left_back_foot_color_upper_sat = 255
+        self.left_back_foot_color_upper_val = 255
+        self.left_back_foot_collision_detect = 0
+        self.left_back_foot_dilation = 1
+        self.left_back_foot_minBoxSize = 1
+        self.right_back_foot_color_lower_hue = 0
+        self.right_back_foot_color_lower_sat = 0
+        self.right_back_foot_color_lower_val = 0
+        self.right_back_foot_color_upper_hue = 180
+        self.right_back_foot_color_upper_sat = 255
+        self.right_back_foot_color_upper_val = 255
+        self.right_back_foot_collision_detect = 0
+        self.right_back_foot_dilation = 1
+        self.right_back_foot_minBoxSize = 1
+
         self.noiseReduction_on = False
         self.deNoise_val = 1
         self.mouse_count = 0
@@ -161,9 +182,10 @@ class MTrack:
                                                      axis=1)
 
     # Method to perform color based object detection on a single image
-    def process_image_color(self, img, color_lower_hue, color_lower_sat, color_lower_val, color_upper_hue,
-                            color_upper_sat,
-                            color_upper_val, collision_detect, dilation, minboxsize, box_scale):
+    def process_image_color(self, img,
+        color_lower_hue, color_lower_sat, color_lower_val,
+        color_upper_hue, color_upper_sat, color_upper_val,
+        collision_detect, dilation, minboxsize, box_scale):
 
         box_list = []  # Box storage
         center_points = []  # Center Points
@@ -202,14 +224,18 @@ class MTrack:
             y = int((i[1][1] + i[0][1]) / 2)
             center_points.append((x, y))
 
+        print '--------'
+        print box_list
+        print center_points
+        print '--------'
+
         return box_list, center_points
 
-
     # Method to perform roi based object detection on a single image
-    def process_image_roi(self, img, roi_hist, track_window, color_lower_hue, color_lower_sat, color_lower_val,
-                          color_upper_hue,
-                          color_upper_sat,
-                          color_upper_val, dilation):
+    def process_image_roi(self, img, roi_hist, track_window,
+        color_lower_hue, color_lower_sat, color_lower_val,
+        color_upper_hue, color_upper_sat, color_upper_val,
+        dilation):
 
         center_points = []  # Center Points
 
@@ -218,9 +244,10 @@ class MTrack:
             img = cv2.fastNlMeansDenoisingColored(img, h=self.deNoise_val)
 
         # Generate Color Mask
-        color_binary = self.map_binary_color(img, color_lower_hue, color_lower_sat, color_lower_val,
-                                             color_upper_hue,
-                                             color_upper_sat, color_upper_val, dilation)
+        color_binary = self.map_binary_color(img, \
+            color_lower_hue, color_lower_sat, color_lower_val,
+            color_upper_hue, color_upper_sat, color_upper_val,
+            dilation)
 
         ## pre-processing image
         # blur image
@@ -479,8 +506,10 @@ class MTrack:
 
 
     # Method to sort mouse list from top left to bottom right
-    def sort_mouse_list(self, box_list, center_points, left_foot_roi_hist_buffer,
-                        left_foot_roi_window_buffer,right_foot_roi_hist_buffer,right_foot_roi_window_buffer):
+    def sort_mouse_list(self, box_list, center_points,
+        left_foot_roi_hist_buffer, left_foot_roi_window_buffer,
+        right_foot_roi_hist_buffer, right_foot_roi_window_buffer):
+        
         # Storage Tuples
         top_left = ()
         top_right = ()
@@ -532,8 +561,11 @@ class MTrack:
         right_foot_right_single_roi_window = ()
 
         # For each center point...
+        print 'entering for loop'
         for i in range(0, len(center_points)):
+            print 'for loop iteration %s' % i
             if self.mouse_count > 1:
+                print 'self.mouse_count > 1'
                 # Initialize Booleans
                 left = False
                 right = False
@@ -554,6 +586,7 @@ class MTrack:
                             right = True
 
             if self.mouse_count > 2:  # If there are 4 mice
+                print 'self.mouse_count > 2'
                 if self.wall2[0] == 0:  # If wall 2 is horizontal
                     for j in self.wall2[1]:  # For each point on the line
                         if j[1] > center_points[i][1] and j[0] == center_points[i][0]:
@@ -598,6 +631,7 @@ class MTrack:
                         right_foot_bottom_right_roi_window = right_foot_roi_window_buffer[i]
 
             else:  # If there are 2 mice
+                print 'else # If there are 2 mice'
                 if top is True:
                     top_single = center_points[i]
                     top_single_box = box_list[i]
@@ -705,6 +739,5 @@ class MTrack:
                             center_points[i][j][1] += box_list[i][0][1]
                         center_points[i][j] = tuple(center_points[i][j])
         return center_points
-
 
 

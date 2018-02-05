@@ -1030,8 +1030,8 @@ class MainWindow(QtGui.QMainWindow):
 
     # update the mouse count when the mouse number selector is changed
     def selectorUpdate_mouseNum(self):
-        self.mouse_count = str(self.mouse_num_selector.currentText())
 
+        self.mouse_count = str(self.mouse_num_selector.currentText())
 
     # update the view mode when the view mode selector is changed
     def selectorUpdate_viewMode(self):
@@ -1069,7 +1069,6 @@ class MainWindow(QtGui.QMainWindow):
             self.displayImage(self.parent_img, False)
 
     # update zoom when changed
-
     def sliderUpdate_Zoom(self):
         self.zoom = self.Zoom_ScrollBar.value() /10
         self.zoom = 0.5*self.zoom
@@ -1087,6 +1086,7 @@ class MainWindow(QtGui.QMainWindow):
         except:
             pass
         return self.zoom
+
     #  update the LHue when changed
     def sliderUpdate_LHue(self):
         if self.viewMode == 'Body Color Mask':
@@ -1170,7 +1170,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.updateSelectorImage()
         self.displayImage(self.parent_img, False)
-
 
     # update the Dilation when changed
     def sliderUpdate_Dilation(self):
@@ -1434,24 +1433,36 @@ class MainWindow(QtGui.QMainWindow):
         orig_img = cv2.cvtColor(orig_img, cv2.COLOR_RGB2HSV)
 
         # Detect Mouse bodies
-        mouse_box_list, mouse_center_points = self.Tracker.process_image_color(orig_img.copy(),
-                                                                               self.Tracker.body_color_lower_hue,
-                                                                               self.Tracker.body_color_lower_sat,
-                                                                               self.Tracker.body_color_lower_val,
-                                                                               self.Tracker.body_color_upper_hue,
-                                                                               self.Tracker.body_color_upper_sat,
-                                                                               self.Tracker.body_color_upper_val,
-                                                                               self.Tracker.body_collision_detect,
-                                                                               self.Tracker.body_dilation,
-                                                                               self.Tracker.body_minBoxSize,                                                                               self.Tracker.box_scale)
+        mouse_box_list, mouse_center_points = \
+        self.Tracker.process_image_color(\
+            orig_img.copy(),
+            self.Tracker.body_color_lower_hue,
+            self.Tracker.body_color_lower_sat,
+            self.Tracker.body_color_lower_val,
+            self.Tracker.body_color_upper_hue,
+            self.Tracker.body_color_upper_sat,
+            self.Tracker.body_color_upper_val,
+            self.Tracker.body_collision_detect,
+            self.Tracker.body_dilation,
+            self.Tracker.body_minBoxSize,
+            self.Tracker.box_scale)
+        
         # If too many mice are detected
         if len(mouse_box_list) > int(self.mouse_count):
             self.dialog.infoDialog("Too many mice detected! Reconfigure Parameters.")
             return
 
         # Sort mouse lists
+        print 1
+        print 'self.left_foot_roi_hist_buffer ', self.left_foot_roi_hist_buffer
+        print 'self.left_foot_roi_window_buffer ', self.left_foot_roi_window_buffer
+        print 'self.right_foot_roi_hist_buffer ',  self.right_foot_roi_hist_buffer
+        print 'self.right_foot_roi_window_buffer ',  self.right_foot_roi_window_buffer
         if int(self.mouse_count) > 1:
-            mouse_box_list, mouse_center_points, self.left_foot_roi_hist_buffer, self.left_foot_roi_window_buffer, self.right_foot_roi_hist_buffer, self.right_foot_roi_window_buffer = self.Tracker.sort_mouse_list(
+            mouse_box_list, mouse_center_points, \
+            self.left_foot_roi_hist_buffer, self.left_foot_roi_window_buffer, \
+            self.right_foot_roi_hist_buffer, self.right_foot_roi_window_buffer = \
+            self.Tracker.sort_mouse_list(
                 mouse_box_list, mouse_center_points,
                 self.left_foot_roi_hist_buffer,
                 self.left_foot_roi_window_buffer,
@@ -1459,13 +1470,29 @@ class MainWindow(QtGui.QMainWindow):
                 self.right_foot_roi_window_buffer)
 
 
-
-
         # Crop mice from image
         if mouse_box_list:
             crop_list = self.Tracker.crop_images(orig_img, mouse_box_list)
 
+        # print '--------'
+        # print 'L: lower: H,S,V: %s,%s,%s\tupper: H,S,V: %s,%s,%s\tdialation: %s' \
+        # % (self.Tracker.left_foot_color_lower_hue, self.Tracker.left_foot_color_lower_sat, self.Tracker.left_foot_color_lower_val, \
+        #    self.Tracker.left_foot_color_upper_hue, self.Tracker.left_foot_color_upper_sat, self.Tracker.left_foot_color_upper_val, \
+        #    self.Tracker.left_foot_dilation)
+        # print 'R: lower: H,S,V: %s,%s,%s\tupper: H,S,V: %s,%s,%s\tdialation: %s' \
+        # % (self.Tracker.right_foot_color_lower_hue, self.Tracker.right_foot_color_lower_sat, self.Tracker.right_foot_color_lower_val, \
+        #    self.Tracker.right_foot_color_upper_hue, self.Tracker.right_foot_color_upper_sat, self.Tracker.right_foot_color_upper_val, \
+        #    self.Tracker.right_foot_dilation)
+        # print 'left_foot_roi_hist_buffer, left_foot_roi_window_buffer = %s, %s' \
+        # % (self.left_foot_roi_hist_buffer, self.right_foot_roi_window_buffer)
+
+        print 2
+        print 'self.left_foot_roi_hist_buffer ', self.left_foot_roi_hist_buffer
+        print 'self.left_foot_roi_window_buffer ', self.left_foot_roi_window_buffer
+        print 'self.right_foot_roi_hist_buffer ',  self.right_foot_roi_hist_buffer
+        print 'self.right_foot_roi_window_buffer ',  self.right_foot_roi_window_buffer
         if crop_list:
+        
             # Perform Noise Reduction on cropped images
             if self.Tracker.noiseReduction_on is True:
                 for i in range(0, len(crop_list)):
@@ -1473,7 +1500,8 @@ class MainWindow(QtGui.QMainWindow):
 
             # Perform roi tracking for each isolated image for left foot
             for i in range(0, len(crop_list)):
-                left_foot_center_points[i], left_track_window = self.Tracker.process_image_roi(
+                left_foot_center_points[i], left_track_window = \
+                self.Tracker.process_image_roi(
                     crop_list[i],
                     self.left_foot_roi_hist_buffer[i],
                     self.left_foot_roi_window_buffer[i],
@@ -1486,7 +1514,8 @@ class MainWindow(QtGui.QMainWindow):
                     self.Tracker.left_foot_dilation)
 
                 # Perform roi tracking for each isolated image for right foot
-                right_foot_center_points[i], right_track_window = self.Tracker.process_image_roi(
+                right_foot_center_points[i], right_track_window = \
+                self.Tracker.process_image_roi(
                     crop_list[i],
                     self.right_foot_roi_hist_buffer[i],
                     self.right_foot_roi_window_buffer[i],
@@ -1557,7 +1586,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
 
-                # Generate Output strings
+            # Generate Output strings
             if len(crop_list) == 1:
                 for i in range(0, len(mouse_box_list)):
                     s = (str(self.frame_count) + " " + str(i+1) + " " +
@@ -1605,6 +1634,7 @@ class MainWindow(QtGui.QMainWindow):
                             k = ('\n')
                             self.saveFile.write(k)
 
+
         # Draw wall Lines
         for i in range(0, len(self.cage_wall_vertices), 2):
             cv2.line(orig_img, tuple(self.cage_wall_vertices[i]), tuple(self.cage_wall_vertices[i + 1]), (211, 0, 148),1, 8)
@@ -1634,6 +1664,6 @@ if __name__ == "__main__":
     MTrack_Qt_instance.setPalette(pal)
 
     QtInstance = MainWindow(MTrack_Qt_instance)
-
+    
     MTrack_Qt_instance.show()
     sys.exit(app.exec_())

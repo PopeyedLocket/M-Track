@@ -1,0 +1,12 @@
+
+
+
+How do I move forward with reading the code?
+
+	maybe do a basic PyQt tutorial
+
+	the GUI appears when
+	    MTrack_Qt_instance.show()
+	is run
+
+	

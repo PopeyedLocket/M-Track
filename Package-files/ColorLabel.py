@@ -25,4 +25,3 @@ class ColorLabel(QLabel):
         p1 = QtGui.QPixmap.fromImage(qimg)
         self.setPixmap(p1)
 
-
